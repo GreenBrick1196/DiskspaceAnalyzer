@@ -1,0 +1,25 @@
+Icon pack "Flat Color Icons" by "Icons8", downloaded from https://icon-sets.iconify.design/flat-color-icons/
+Distributed under MIT License.
+{
+	FileAudioIcon.svg (flat-color-icons--audio-file.svg)
+	FileImageIcon.svg (flat-color-icons--image-file.svg)
+	FileOtherIcon.svg (flat-color-icons--file.svg)
+	FileTextIcon.svg (flat-color-icons--document.svg)
+	FileVideoIcon.svg (flat-color-icons--video-file.svg)
+	DirectoryFolderIcon.svg (flat-color-icons--folder)
+}
+
+
+Icon pack "Phosphor" by "Phosphor Icons", downloaded from https://icon-sets.iconify.design/ph/
+Distributed under MIT License.
+{
+	DuplicateFileGroupIcon (ph--copy.svg)
+}
+
+
+Icon pack "Bootstrap Icons" by "The Bootstrap Authors", downloaded from https://icon-sets.iconify.design/bi/
+Distributed under MIT License.
+{
+	DirectoryDiskIcon.svg (bi--device-hdd-fill.svg)
+	UnknownIcon.svg (bi--question.svg)
+}

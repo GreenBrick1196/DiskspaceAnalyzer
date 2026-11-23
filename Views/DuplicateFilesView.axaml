@@ -1,0 +1,165 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:models="using:RPZ_DiskspaceAnalyzer.Models"
+             xmlns:vm="using:RPZ_DiskspaceAnalyzer.ViewModels"
+             xmlns:converters="using:RPZ_DiskspaceAnalyzer.Converters"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="RPZ_DiskspaceAnalyzer.Views.DuplicateFilesView"
+             x:DataType="vm:DuplicateFilesViewModel">
+
+    <UserControl.Resources>
+       <converters:FilesystemEntryToIconConverter x:Key="FilesystemEntryToIconConverter"/>
+       <converters:IsExpandableConverter x:Key="IsExpandableConverter"/>
+       <converters:IsDuplicateFileGroupConverter x:Key="IsDuplicateFileGroupConverter"/>
+    </UserControl.Resources>
+
+    <Border Padding="10">
+        <Panel>
+            <Grid ColumnDefinitions="2*, *" ColumnSpacing="20" IsVisible="{Binding InitializationFinished}">
+                <TextBlock Text="No duplicates found" FontSize="48" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" IsVisible="{Binding !AreThereAnyDuplicateGroups}" Grid.Column="0"/>
+
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <TreeDataGrid Source="{Binding TreeDataGridSource}" CanUserResizeColumns="True" CanUserSortColumns="True" Loaded="TreeDataGrid_Loaded" Margin="0, 0, 0, 10">
+                        <TreeDataGrid.Resources>
+                            <DataTemplate x:Key="NameColumn" x:DataType="models:IFilesystemEntry">
+                                <Grid ColumnDefinitions="auto, auto" ColumnSpacing="3">
+                                    <Image Source="{Binding Converter={StaticResource FilesystemEntryToIconConverter}}" Width="15" Height="15" Grid.Column="0"/>
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Grid.Column="1"/>
+                                </Grid>
+                            </DataTemplate>
+                        </TreeDataGrid.Resources>
+
+                        <TreeDataGrid.Styles>
+                            <Style Selector="TreeDataGridRow">
+                                <Setter Property="ContextMenu">
+                                    <ContextMenu>
+                                        <MenuItem 
+                                            Header="Expand" 
+                                            Command="{Binding $parent[TreeDataGrid].DataContext.RowMenuItemExpandCommand}" 
+                                            CommandParameter="{Binding}" 
+                                            IsVisible="{Binding Converter={StaticResource IsExpandableConverter}}"/>
+
+                                        <MenuItem 
+                                            Header="Collapse" 
+                                            Command="{Binding $parent[TreeDataGrid].DataContext.RowMenuItemCollapseCommand}" 
+                                            CommandParameter="{Binding}" 
+                                            IsVisible="{Binding Converter={StaticResource IsExpandableConverter}}"/>
+
+                                        <Separator IsVisible="{Binding Converter={StaticResource IsExpandableConverter}}"/>
+
+                                        <MenuItem 
+                                            Header="Open" 
+                                            Command="{Binding $parent[TreeDataGrid].DataContext.RowMenuItemOpenCommand}" 
+                                            CommandParameter="{Binding}"
+                                            IsVisible="{Binding Converter={StaticResource IsDuplicateFileGroupConverter}, ConverterParameter=Not}"/>
+
+                                        <MenuItem 
+                                            Header="Select in File Manager" 
+                                            Command="{Binding $parent[TreeDataGrid].DataContext.RowMenuItemSelectInFileManagerCommand}" 
+                                            CommandParameter="{Binding}"
+                                            IsVisible="{Binding Converter={StaticResource IsDuplicateFileGroupConverter}, ConverterParameter=Not}"/>
+
+                                        <MenuItem 
+                                            Header="Copy Path" 
+                                            Command="{Binding $parent[TreeDataGrid].DataContext.RowMenuItemCopyPathCommand}" 
+                                            CommandParameter="{Binding}"
+                                            IsVisible="{Binding Converter={StaticResource IsDuplicateFileGroupConverter}, ConverterParameter=Not}"/>
+
+                                        <MenuItem 
+                                            Header="Deduplicate" 
+                                            Command="{Binding $parent[TreeDataGrid].DataContext.RowMenuItemDeduplicateCommand}" 
+                                            CommandParameter="{Binding}"
+                                            IsVisible="{Binding Converter={StaticResource IsDuplicateFileGroupConverter}}"/>
+                                    </ContextMenu>
+                                </Setter>
+                            </Style>
+                        </TreeDataGrid.Styles>
+                    </TreeDataGrid>  
+                </ScrollViewer>
+
+                <StackPanel Orientation="Vertical" VerticalAlignment="Center" Grid.Column="1">
+                    <SelectableTextBlock Text="Select an item to see information about it" FontSize="24" IsVisible="{Binding !IsItemSelected}" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center"/>
+                    <UserControl Content="{Binding FilesystemEntryInfoDisplayViewModel}" Margin="0, 0, 0, 20" IsVisible="{Binding IsItemSelected}" HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <Grid.Effect>
+                    <BlurEffect Radius="{Binding BackgroundBlurRadius}"/>
+                </Grid.Effect>
+            </Grid>
+              
+
+            <Grid RowDefinitions="*, *, *" ColumnDefinitions="*, 3*, *" IsVisible="{Binding !InitializationFinished}">
+                <StackPanel Orientation="Vertical" Spacing="10" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1">
+                    <TextBlock Text="{Binding ProgressBarText}" TextWrapping="Wrap" FontSize="24" HorizontalAlignment="Center" TextAlignment="Center"/>
+                    <ProgressBar Minimum="0" Maximum="{Binding ProgressBarMaximum}" Value="{Binding ProgressBarProgress}" IsIndeterminate="{Binding IsProgressBarIndeterminate}" Height="20"/>
+                </StackPanel>
+            </Grid>
+
+            <Grid Background="Transparent" ColumnDefinitions="*, 3*, *" IsVisible="{Binding IsDeduplicationConfirmationPopupOpen}">
+                <Border Background="{DynamicResource BackgroundColor}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="3" Padding="20" VerticalAlignment="Center" Grid.Column="1">
+                    <StackPanel Orientation="Vertical" Spacing="10" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding DeduplicationTitleText}" FontSize="24" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center"/>
+                        
+                        <TextBlock Text="This file will be kept:"/>
+                        <ScrollViewer Background="{DynamicResource SlightlyGreenBackgroundColor}" BorderBrush="{DynamicResource GreenBorderColor}" BorderThickness="3" MaxHeight="200" HorizontalScrollBarVisibility="Auto">
+                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                <Image Source="{Binding FileToBeKept, Converter={StaticResource FilesystemEntryToIconConverter}}" Width="24" Height="24"/>
+				    	        <SelectableTextBlock Text="{Binding FileToBeKept.Path}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                        
+                        <TextBlock Text="These files will be deleted:"/>
+                        <ScrollViewer Background="{DynamicResource SlightlyRedBackgroundColor}" BorderBrush="{DynamicResource RedBorderColor}" BorderThickness="3" MaxHeight="200" HorizontalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding FilesToBeDeleted}">
+				    		    <ItemsControl.ItemsPanel>
+				    		    	<ItemsPanelTemplate>
+				    		    		<StackPanel Orientation="Vertical" Spacing="5"/>
+				    		    	</ItemsPanelTemplate>
+				    		    </ItemsControl.ItemsPanel>
+
+				    		    <ItemsControl.ItemTemplate>
+				    		    	<DataTemplate>
+                                        <StackPanel Orientation="Horizontal" Spacing="5">
+                                            <Image Source="{Binding Converter={StaticResource FilesystemEntryToIconConverter}}" Width="24" Height="24"/>
+				    		    			<SelectableTextBlock Text="{Binding Path}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+				    		    	</DataTemplate>
+				    		    </ItemsControl.ItemTemplate>
+				    	    </ItemsControl>
+                        </ScrollViewer>
+
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                            <Button Command="{Binding CancelDeduplicationCommand}" HorizontalAlignment="Stretch" Grid.Column="0">
+                                <TextBlock Text="Cancel" FontSize="24" HorizontalAlignment="Center"/>
+                            </Button>
+                            <Button Command="{Binding PerformDeduplicationCommand}" HorizontalAlignment="Stretch" Grid.Column="1">
+                                <TextBlock Text="Deduplicate" FontSize="24" HorizontalAlignment="Center"/>
+
+                                <Button.Styles>
+                                    <Style Selector="Button">
+                                        <Setter Property="Background" Value="{DynamicResource DangerButtonBackgroundColor}"/>
+                                        <Setter Property="Foreground" Value="#FFFFFF"/>
+                                    </Style>
+
+                                    <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                                        <Setter Property="Background" Value="{DynamicResource DangerButtonBackgroundColorOnHover}"/>
+                                        <Setter Property="Foreground" Value="#FFFFFF"/>
+                                    </Style>
+
+                                    <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+                                        <Setter Property="Background" Value="{DynamicResource DangerButtonBackgroundColorOnPress}"/>
+                                        <Setter Property="Foreground" Value="#FFFFFF"/>
+                                    </Style>
+                                </Button.Styles>
+                            </Button>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+             </Grid>
+        </Panel>
+
+
+    </Border>
+</UserControl>

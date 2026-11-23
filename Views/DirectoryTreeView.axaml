@@ -1,0 +1,96 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:models="using:RPZ_DiskspaceAnalyzer.Models"
+             xmlns:vm="using:RPZ_DiskspaceAnalyzer.ViewModels"
+             xmlns:converters="using:RPZ_DiskspaceAnalyzer.Converters"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="RPZ_DiskspaceAnalyzer.Views.DirectoryTreeView"
+             x:DataType="vm:DirectoryTreeViewModel">
+
+    <UserControl.Resources>
+       <converters:FilesystemEntryToIconConverter x:Key="FilesystemEntryToIconConverter"/>
+       <converters:IsExpandableConverter x:Key="IsExpandableConverter"/>
+    </UserControl.Resources>
+
+    <Border Padding="10">
+        <Grid ColumnDefinitions="2*, *" ColumnSpacing="20">
+
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                <TreeDataGrid Source="{Binding TreeDataGridSource}" CanUserResizeColumns="True" CanUserSortColumns="True" Loaded="TreeDataGrid_Loaded" Margin="0, 0, 0, 10">
+
+                    <TreeDataGrid.Resources>
+                        <DataTemplate x:Key="NameColumn" x:DataType="models:IFilesystemEntry">
+                            <Grid ColumnDefinitions="auto, auto" ColumnSpacing="3">
+                                <Image Source="{Binding Converter={StaticResource FilesystemEntryToIconConverter}}" Width="15" Height="15" Grid.Column="0"/>
+                                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Grid.Column="1"/>
+                            </Grid>
+                        </DataTemplate>
+
+                        <DataTemplate x:Key="ProportionColumn" x:DataType="models:IFilesystemEntry">
+                            <Border Margin="2" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="{Binding SizeProportionColumnWidths[0]}"/>
+                                        <ColumnDefinition Width="{Binding SizeProportionColumnWidths[1]}"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="{DynamicResource ProportionColumnBackgroundColor}" Grid.Column="0"/>
+                                    <TextBlock Text="{Binding PhysicalSizeTotalPercentageText}" Margin="3, 0, 3, 0" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="0" Grid.ColumnSpan="2"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </TreeDataGrid.Resources>
+
+                    <TreeDataGrid.Styles>
+                        <Style Selector="TreeDataGridRow">
+                            <Setter Property="ContextMenu">
+                                <ContextMenu>
+                                    <MenuItem 
+                                        Header="Expand" 
+                                        Command="{Binding $parent[TreeDataGrid].DataContext.RowMenuItemExpandCommand}" 
+                                        CommandParameter="{Binding}" 
+                                        IsVisible="{Binding Converter={StaticResource IsExpandableConverter}}"/>
+
+                                    <MenuItem 
+                                        Header="Collapse" 
+                                        Command="{Binding $parent[TreeDataGrid].DataContext.RowMenuItemCollapseCommand}" 
+                                        CommandParameter="{Binding}" 
+                                        IsVisible="{Binding Converter={StaticResource IsExpandableConverter}}"/>
+
+                                    <Separator IsVisible="{Binding Converter={StaticResource IsExpandableConverter}}"/>
+
+                                    <MenuItem 
+                                        Header="Open" 
+                                        Command="{Binding $parent[TreeDataGrid].DataContext.RowMenuItemOpenCommand}" 
+                                        CommandParameter="{Binding}"/>
+
+                                    <MenuItem 
+                                        Header="Select in File Manager" 
+                                        Command="{Binding $parent[TreeDataGrid].DataContext.RowMenuItemSelectInFileManagerCommand}" 
+                                        CommandParameter="{Binding}"/>
+
+                                    <MenuItem 
+                                        Header="Copy Path" 
+                                        Command="{Binding $parent[TreeDataGrid].DataContext.RowMenuItemCopyPathCommand}" 
+                                        CommandParameter="{Binding}"/>
+                                </ContextMenu>
+                            </Setter>
+                        </Style>
+                    </TreeDataGrid.Styles>
+                </TreeDataGrid>
+            </ScrollViewer>
+
+            <StackPanel Orientation="Vertical" VerticalAlignment="Center" Grid.Column="1">
+                <SelectableTextBlock Text="Select an item to see information about it" FontSize="24" IsVisible="{Binding !IsItemSelected}" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center"/>
+                <UserControl Content="{Binding FilesystemEntryInfoDisplayViewModel}" Margin="0, 0, 0, 20" IsVisible="{Binding IsItemSelected}" HorizontalAlignment="Center"/>
+
+                <lvc:PieChart AnimationsSpeed="{Binding PieChartAnimationsSpeed}" Series="{Binding PieChartSeries}" HorizontalAlignment="Stretch" Height="300" IsVisible="{Binding IsSelectedItemDirectoryData}"/>
+            </StackPanel>
+
+        </Grid>
+    </Border>
+
+</UserControl>

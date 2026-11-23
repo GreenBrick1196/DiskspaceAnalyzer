@@ -1,0 +1,28 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:models="using:RPZ_DiskspaceAnalyzer.Models"
+             xmlns:vm="using:RPZ_DiskspaceAnalyzer.ViewModels"
+             xmlns:converters="using:RPZ_DiskspaceAnalyzer.Converters"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="RPZ_DiskspaceAnalyzer.Views.FilesystemEntryInfoDisplayView"
+             x:DataType="vm:FilesystemEntryInfoDisplayViewModel">
+
+    <UserControl.Resources>
+       <converters:FilesystemEntryToIconConverter x:Key="FilesystemEntryToIconConverter"/>
+    </UserControl.Resources>
+
+    <Border>
+        <StackPanel Orientation="Vertical" Spacing="5">
+            <Grid ColumnDefinitions="auto, *" ColumnSpacing="10" HorizontalAlignment="Center">
+                <Image Source="{Binding FilesystemEntry, Converter={StaticResource FilesystemEntryToIconConverter}}" Width="75" Height="75" Grid.Column="0"/>
+                <SelectableTextBlock Text="{Binding FilesystemEntry.Name}" FontSize="24" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Grid.Column="1"/>
+            </Grid>
+
+            <SelectableTextBlock Text="{Binding FilesystemEntry.Path}" TextWrapping="Wrap" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+            <SelectableTextBlock Text="{Binding LowerString}" TextWrapping="Wrap" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+        </StackPanel>    
+    </Border>
+
+</UserControl>

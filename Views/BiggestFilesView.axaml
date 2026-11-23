@@ -1,0 +1,76 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:models="using:RPZ_DiskspaceAnalyzer.Models"
+             xmlns:vm="using:RPZ_DiskspaceAnalyzer.ViewModels"
+             xmlns:converters="using:RPZ_DiskspaceAnalyzer.Converters"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="RPZ_DiskspaceAnalyzer.Views.BiggestFilesView"
+             x:DataType="vm:BiggestFilesViewModel">
+             
+    <UserControl.Resources>
+       <converters:FilesystemEntryToIconConverter x:Key="FilesystemEntryToIconConverter"/>
+    </UserControl.Resources>
+
+    <Border Padding="10">
+        <Panel>
+            <Grid ColumnDefinitions="2*, *" ColumnSpacing="20" IsVisible="{Binding InitializationFinished}">
+                <TextBlock Text="No files found" FontSize="48" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" IsVisible="{Binding !AreThereAnyFiles}" Grid.Column="0"/>
+
+
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <TreeDataGrid Source="{Binding TreeDataGridSource}" CanUserResizeColumns="True" CanUserSortColumns="True" Loaded="TreeDataGrid_Loaded" Margin="0, 0, 0, 10">
+                        <TreeDataGrid.Resources>
+                            <DataTemplate x:Key="NameColumn" x:DataType="models:IFilesystemEntry">
+                                <Grid ColumnDefinitions="auto, auto" ColumnSpacing="3">
+                                    <Image Source="{Binding Converter={StaticResource FilesystemEntryToIconConverter}}" Width="15" Height="15" Grid.Column="0"/>
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Grid.Column="1"/>
+                                </Grid>
+                            </DataTemplate>
+                        </TreeDataGrid.Resources>
+
+                        <TreeDataGrid.Styles>
+                            <Style Selector="TreeDataGridRow">
+                                <Setter Property="ContextMenu">
+                                    <ContextMenu>
+                                        <MenuItem 
+                                            Header="Open" 
+                                            Command="{Binding $parent[TreeDataGrid].DataContext.RowMenuItemOpenCommand}" 
+                                            CommandParameter="{Binding}"/>
+
+                                        <MenuItem 
+                                            Header="Select in File Manager" 
+                                            Command="{Binding $parent[TreeDataGrid].DataContext.RowMenuItemSelectInFileManagerCommand}" 
+                                            CommandParameter="{Binding}"/>
+
+                                        <MenuItem 
+                                            Header="Copy Path" 
+                                            Command="{Binding $parent[TreeDataGrid].DataContext.RowMenuItemCopyPathCommand}" 
+                                            CommandParameter="{Binding}"/>
+                                    </ContextMenu>
+                                </Setter>
+                            </Style>
+                        </TreeDataGrid.Styles>
+                    </TreeDataGrid> 
+                </ScrollViewer>
+
+                <StackPanel Orientation="Vertical" VerticalAlignment="Center" Grid.Column="1">
+                    <SelectableTextBlock Text="Select an item to see information about it" FontSize="24" IsVisible="{Binding !IsItemSelected}" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center"/>
+                    <UserControl Content="{Binding FilesystemEntryInfoDisplayViewModel}" Margin="0, 0, 0, 20" IsVisible="{Binding IsItemSelected}" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+              
+
+            <Grid RowDefinitions="*, *, *" ColumnDefinitions="*, 3*, *" IsVisible="{Binding !InitializationFinished}">
+                <StackPanel Orientation="Vertical" Spacing="10" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1">
+                    <TextBlock Text="Waiting until directory tree scanning is finished..." TextWrapping="Wrap" FontSize="24" HorizontalAlignment="Center" TextAlignment="Center"/>
+                    <ProgressBar IsIndeterminate="True" Height="20"/>
+                </StackPanel>
+            </Grid>
+        </Panel>
+
+
+    </Border>
+
+</UserControl>

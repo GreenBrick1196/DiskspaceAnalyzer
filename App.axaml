@@ -1,0 +1,60 @@
+﻿<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="RPZ_DiskspaceAnalyzer.App"
+             xmlns:local="using:RPZ_DiskspaceAnalyzer"
+             RequestedThemeVariant="Default">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.DataTemplates>
+        <local:ViewLocator />
+    </Application.DataTemplates>
+
+    <Application.Styles>
+        <FluentTheme />
+        <StyleInclude Source="avares://TreeDataGrid.Avalonia/Themes/Fluent.axaml"/>
+    </Application.Styles>
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+
+                    <SolidColorBrush x:Key="BackgroundColor" Color="#FFFFFF"/>
+                    <SolidColorBrush x:Key="BorderColor" Color="#000000"/>
+
+                    <SolidColorBrush x:Key="ProportionColumnBackgroundColor" Color="#AAAAAA"/>
+                    
+                    <SolidColorBrush x:Key="SlightlyRedBackgroundColor" Color="#FC7E7E"/>
+                    <SolidColorBrush x:Key="SlightlyGreenBackgroundColor" Color="#7EFC7E"/>
+
+                    <SolidColorBrush x:Key="RedBorderColor" Color="#c80000"/>
+                    <SolidColorBrush x:Key="GreenBorderColor" Color="#00c800"/>
+
+                    <SolidColorBrush x:Key="DangerButtonBackgroundColor" Color="#FF0000"/>
+                    <SolidColorBrush x:Key="DangerButtonBackgroundColorOnHover" Color="#BC0202"/>
+                    <SolidColorBrush x:Key="DangerButtonBackgroundColorOnPress" Color="#830000"/>
+
+                </ResourceDictionary>
+
+                <ResourceDictionary x:Key="Dark">
+
+                    <SolidColorBrush x:Key="BackgroundColor" Color="#000000"/>
+                    <SolidColorBrush x:Key="BorderColor" Color="#FFFFFF"/>
+
+                    <SolidColorBrush x:Key="ProportionColumnBackgroundColor" Color="#555555"/>
+                                        
+                    <SolidColorBrush x:Key="RedBorderColor" Color="#c80000"/>
+                    <SolidColorBrush x:Key="GreenBorderColor" Color="#00c800"/>
+
+                    <SolidColorBrush x:Key="SlightlyRedBackgroundColor" Color="#520202"/>
+                    <SolidColorBrush x:Key="SlightlyGreenBackgroundColor" Color="#025202"/>
+
+                    <SolidColorBrush x:Key="DangerButtonBackgroundColor" Color="#FF0000"/>
+                    <SolidColorBrush x:Key="DangerButtonBackgroundColorOnHover" Color="#BC0202"/>
+                    <SolidColorBrush x:Key="DangerButtonBackgroundColorOnPress" Color="#830000"/>
+
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

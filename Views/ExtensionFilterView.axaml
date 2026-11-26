@@ -1,0 +1,42 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:models="using:RPZ_DiskspaceAnalyzer.Models"
+             xmlns:vm="using:RPZ_DiskspaceAnalyzer.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="RPZ_DiskspaceAnalyzer.Views.ExtensionFilterView"
+             x:DataType="vm:ExtensionFilterViewModel">
+
+    <Border>
+        <StackPanel Orientation="Vertical" Spacing="5">
+            <Grid RowDefinitions="auto, auto, auto, auto, auto, auto, auto" RowSpacing="5" ColumnDefinitions="*, auto" ColumnSpacing="5">
+                <TextBlock Text="Extension Filter" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center" Grid.Row="0" Grid.Column="0"/>
+                <TextBox Text="{Binding ExtensionsString}" PlaceholderText="Extenstions separated by whitespaces..." AcceptsReturn="True" VerticalAlignment="Stretch" Grid.Row="1" Grid.RowSpan="6" Grid.Column="0"/>
+
+                <TextBlock Text="Mode:" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center" Grid.Row="0" Grid.Column="1"/>
+                <RadioButton Content="Include" IsChecked="{Binding IsIncludeModeChecked}" Grid.Row="1" Grid.Column="1"/>
+                <RadioButton Content="Exclude" IsChecked="{Binding IsExcludeModeChecked}" Grid.Row="2" Grid.Column="1"/>
+                
+                <Separator Grid.Row="3" Grid.Column="1"/>
+
+                <TextBlock Text="Preset:" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center" Grid.Row="4" Grid.Column="1"/>
+                <ComboBox ItemsSource="{x:Static models:FileData.FileTypes}" SelectedItem="{Binding SelectedFiletype}" HorizontalAlignment="Stretch" Grid.Row="5" Grid.Column="1"/>
+                <Button Command="{Binding AddPresetCommand}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="6" Grid.Column="1">
+                    <TextBlock Text="Append" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+                </Button>
+            </Grid>
+
+            <Grid ColumnDefinitions="auto, *" ColumnSpacing="5">
+                <Button Command="{Binding ClearFilterCommand}" HorizontalAlignment="Stretch" MinHeight="40" Grid.Column="0">
+                    <TextBlock Text="Clear" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+                </Button>  
+                <Button Command="{Binding ApplyFilterCommand}" HorizontalAlignment="Stretch" MinHeight="40" Grid.Column="1">
+                    <TextBlock Text="Apply" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+                </Button>  
+            </Grid>
+
+        </StackPanel>    
+    </Border>
+
+</UserControl>

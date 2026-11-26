@@ -18,21 +18,27 @@ namespace RPZ_DiskspaceAnalyzer.Converters
     {
         private static readonly IImage DirectoryDiskIcon = new SvgImage { Source = SvgSource.LoadFromStream(AssetLoader.Open(new Uri("avares://RPZ_DiskspaceAnalyzer/Assets/DirectoryDiskIcon.svg"))) };
         private static readonly IImage DirectoryFolderIcon = new SvgImage { Source = SvgSource.LoadFromStream(AssetLoader.Open(new Uri("avares://RPZ_DiskspaceAnalyzer/Assets/DirectoryFolderIcon.svg"))) };
-        
+
+        private static readonly Dictionary<string, IImage> _fileTypesToIcons = LoadIcons();
+        private static Dictionary<string, IImage> LoadIcons()
+        {
+            Dictionary<string, IImage> result = new Dictionary<string, IImage>();
+
+            foreach (string fileType in FileData.FileTypesToExtensions.Keys)
+            {
+                result.Add(fileType, new SvgImage
+                {
+                    Source = SvgSource.LoadFromStream(AssetLoader.Open(new Uri($"avares://RPZ_DiskspaceAnalyzer/Assets/File{fileType}Icon.svg")))
+                });
+            }
+            return result;
+        }
+
+        private static readonly IImage FileOtherIcon = new SvgImage { Source = SvgSource.LoadFromStream(AssetLoader.Open(new Uri("avares://RPZ_DiskspaceAnalyzer/Assets/FileOtherIcon.svg"))) };
+
         private static readonly IImage DuplicateFileGroupIcon = new SvgImage { Source = SvgSource.LoadFromStream(AssetLoader.Open(new Uri("avares://RPZ_DiskspaceAnalyzer/Assets/DuplicateFileGroupIcon.svg"))) };
 
         private static readonly IImage UnknownIcon = new SvgImage { Source = SvgSource.LoadFromStream(AssetLoader.Open(new Uri("avares://RPZ_DiskspaceAnalyzer/Assets/UnknownIcon.svg"))) };
-
-        private static readonly IImage FileImageIcon = new SvgImage { Source = SvgSource.LoadFromStream(AssetLoader.Open(new Uri("avares://RPZ_DiskspaceAnalyzer/Assets/FileImageIcon.svg"))) };
-        private static readonly IImage FileVideoIcon = new SvgImage { Source = SvgSource.LoadFromStream(AssetLoader.Open(new Uri("avares://RPZ_DiskspaceAnalyzer/Assets/FileVideoIcon.svg"))) };
-        private static readonly IImage FileAudioIcon = new SvgImage { Source = SvgSource.LoadFromStream(AssetLoader.Open(new Uri("avares://RPZ_DiskspaceAnalyzer/Assets/FileAudioIcon.svg"))) };
-        private static readonly IImage FileTextIcon =  new SvgImage { Source = SvgSource.LoadFromStream(AssetLoader.Open(new Uri("avares://RPZ_DiskspaceAnalyzer/Assets/FileTextIcon.svg"))) };
-        private static readonly IImage FileOtherIcon = new SvgImage { Source = SvgSource.LoadFromStream(AssetLoader.Open(new Uri("avares://RPZ_DiskspaceAnalyzer/Assets/FileOtherIcon.svg"))) };
-
-        private static readonly string[] ImageExtenstions = [".jpg", ".jpeg", ".jfif", ".png", ".gif", ".webp", ".avif", ".tiff", ".tif", ".bmp", ".heif", ".heic"];
-        private static readonly string[] VideoExtenstions = [".mp4", ".mkv", ".webm", ".mov", ".avi", ".wmv"];
-        private static readonly string[] AudioExtenstions = [".mp3", ".aac", ".m4a", ".ogg", ".opus", ".wav", ".flac", ".alac", ".ape"];
-        private static readonly string[] TextExtenstions = [".txt", ".md", ".markdown", ".csv", ".json", ".xml", ".log", ".doc", ".docx", ".odt", ".rtf", ".pdf", ".html"];
 
         public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
@@ -55,26 +61,15 @@ namespace RPZ_DiskspaceAnalyzer.Converters
             {
                 string normalizedExtension = filedata.Extension.ToLower();
 
-                if (ImageExtenstions.Contains(normalizedExtension))
+                foreach (KeyValuePair<string, string[]> TypeToExtensions in FileData.FileTypesToExtensions)
                 {
-                    return FileImageIcon;
+                    if (TypeToExtensions.Value.Contains(normalizedExtension))
+                    {
+                        return _fileTypesToIcons[TypeToExtensions.Key];
+                    }
                 }
-                else if (VideoExtenstions.Contains(normalizedExtension))
-                {
-                    return FileVideoIcon;
-                }
-                else if (AudioExtenstions.Contains(normalizedExtension))
-                {
-                    return FileAudioIcon;
-                }
-                else if (TextExtenstions.Contains(normalizedExtension))
-                {
-                    return FileTextIcon;
-                }
-                else
-                {
-                    return FileOtherIcon;
-                }
+
+                return FileOtherIcon;
             }
             else
             {

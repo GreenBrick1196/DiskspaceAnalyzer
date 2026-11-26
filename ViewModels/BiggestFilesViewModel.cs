@@ -34,6 +34,9 @@ namespace RPZ_DiskspaceAnalyzer.ViewModels
         public bool AreThereAnyFiles => FilesToShow.Count > 0;
 
         [ObservableProperty]
+        private ExtensionFilterViewModel _extensionFilterViewModel;
+
+        [ObservableProperty]
         private bool _initializationFinished = false;
 
         [ObservableProperty]
@@ -53,10 +56,15 @@ namespace RPZ_DiskspaceAnalyzer.ViewModels
 
             _filesToShow = new ObservableCollection<FileData>();
 
+            ExtensionFilterViewModel = new ExtensionFilterViewModel((bool regularFilteringPass) =>
+            {
+                FindBiggestFiles(regularFilteringPass ? ExtensionFilterViewModel : null);
+            });
+
             TreeDataGridSource = new FlatTreeDataGridSource<IFilesystemEntry>(FilesToShow);
         }
 
-        public void FindBiggestFiles()
+        public void FindBiggestFiles(ExtensionFilterViewModel? extensionFilterViewModel = null)
         {
             List<FileData> allFiles = new List<FileData>();
 
@@ -68,6 +76,7 @@ namespace RPZ_DiskspaceAnalyzer.ViewModels
             {
                 FilesToShow.Add(allFiles[i]);
             }
+            OnPropertyChanged(nameof(AreThereAnyFiles));
 
             RefreshTreeDataGrid();
             InitializationFinished = true;
@@ -77,6 +86,10 @@ namespace RPZ_DiskspaceAnalyzer.ViewModels
             {
                 foreach (FileData fileData in directoryData.Files)
                 {
+                    if (extensionFilterViewModel is not null && !extensionFilterViewModel.DoesFilePassFilter(fileData))
+                    {
+                        continue;
+                    }
                     allFiles.Add(fileData);
                 }
 

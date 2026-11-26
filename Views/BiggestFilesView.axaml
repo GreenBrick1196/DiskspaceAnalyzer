@@ -18,7 +18,6 @@
             <Grid ColumnDefinitions="2*, *" ColumnSpacing="20" IsVisible="{Binding InitializationFinished}">
                 <TextBlock Text="No files found" FontSize="48" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" IsVisible="{Binding !AreThereAnyFiles}" Grid.Column="0"/>
 
-
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                     <TreeDataGrid Source="{Binding TreeDataGridSource}" CanUserResizeColumns="True" CanUserSortColumns="True" Loaded="TreeDataGrid_Loaded" Margin="0, 0, 0, 10">
                         <TreeDataGrid.Resources>
@@ -55,21 +54,26 @@
                     </TreeDataGrid> 
                 </ScrollViewer>
 
-                <StackPanel Orientation="Vertical" VerticalAlignment="Center" Grid.Column="1">
-                    <SelectableTextBlock Text="Select an item to see information about it" FontSize="24" IsVisible="{Binding !IsItemSelected}" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center"/>
-                    <UserControl Content="{Binding FilesystemEntryInfoDisplayViewModel}" Margin="0, 0, 0, 20" IsVisible="{Binding IsItemSelected}" HorizontalAlignment="Center"/>
-                </StackPanel>
+                <Grid RowDefinitions="*, auto" RowSpacing="5" Grid.Column="1">
+                    <ScrollViewer Grid.Row="0">
+                        <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                            <SelectableTextBlock Text="Select an item to see information about it" FontSize="24" IsVisible="{Binding !IsItemSelected}" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center"/>
+                            <UserControl Content="{Binding FilesystemEntryInfoDisplayViewModel}" Margin="0, 0, 0, 20" IsVisible="{Binding IsItemSelected}" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <UserControl Content="{Binding ExtensionFilterViewModel}" Grid.Row="1"/>
+                </Grid>
+
             </Grid>
-              
 
             <Grid RowDefinitions="*, *, *" ColumnDefinitions="*, 3*, *" IsVisible="{Binding !InitializationFinished}">
                 <StackPanel Orientation="Vertical" Spacing="10" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1">
                     <TextBlock Text="Waiting until directory tree scanning is finished..." TextWrapping="Wrap" FontSize="24" HorizontalAlignment="Center" TextAlignment="Center"/>
-                    <ProgressBar IsIndeterminate="True" Height="20"/>
+                    <ProgressBar IsIndeterminate="True" Height="20" x:Name="waitingProgressbar" AttachedToVisualTree="WaitingProgressbar_AttachedToVisualTree"/>
                 </StackPanel>
             </Grid>
         </Panel>
-
 
     </Border>
 

@@ -21,14 +21,14 @@ namespace RPZ_DiskspaceAnalyzer.ViewModels
             {
                 if (FilesystemEntry is FileData filedata)
                 {
-                    return $"\nAllocated {FileData.FormatFileSize(filedata.PhysicalSize)} ({filedata.PhysicalSize} bytes), Size {FileData.FormatFileSize(filedata.LogicalSize)} ({filedata.LogicalSize} bytes)" +
+                    return $"\nAllocated {FileData.FormatFileSize(filedata.PhysicalSize)}, Size {FileData.FormatFileSize(filedata.LogicalSize)} ({filedata.LogicalSize} bytes)" +
                         $"\nTakes {filedata.PhysicalSizeDirectoryPercentageText} of directory allocated space, {filedata.PhysicalSizeTotalPercentageText} total" +
                         $"\nTakes {filedata.LogicalSizeDirectoryPercentageText} of directory size, {filedata.LogicalSizeTotalPercentageText} total" +
                         $"\nCreated {filedata.CreatedTimeText}, Edited {filedata.EditedTimeText}";
                 }
                 else if (FilesystemEntry is DirectoryData directoryData)
                 {
-                    return $"\nAllocated {FileData.FormatFileSize(directoryData.PhysicalSize)}, Size {FileData.FormatFileSize(directoryData.LogicalSize)}" +
+                    return $"\nAllocated {FileData.FormatFileSize(directoryData.PhysicalSize)}, Size {FileData.FormatFileSize(directoryData.LogicalSize)} ({directoryData.LogicalSize} bytes)" +
                         $"\nTakes {directoryData.PhysicalSizeDirectoryPercentageText} of directory allocated space, {directoryData.PhysicalSizeTotalPercentageText} total" +
                         $"\nTakes {directoryData.LogicalSizeDirectoryPercentageText} of directory size, {directoryData.LogicalSizeTotalPercentageText} total" +
                         $"\nHas {directoryData.DirectoriesInside} subdirectories ({directoryData.Directories.Count} of them direct)" +

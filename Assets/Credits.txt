@@ -1,12 +1,21 @@
 Icon pack "Flat Color Icons" by "Icons8", downloaded from https://icon-sets.iconify.design/flat-color-icons/
 Distributed under MIT License.
 {
-	FileAudioIcon.svg (flat-color-icons--audio-file.svg)
-	FileImageIcon.svg (flat-color-icons--image-file.svg)
-	FileOtherIcon.svg (flat-color-icons--file.svg)
-	FileTextIcon.svg (flat-color-icons--document.svg)
-	FileVideoIcon.svg (flat-color-icons--video-file.svg)
 	DirectoryFolderIcon.svg (flat-color-icons--folder)
+
+	FileImageIcon.svg (flat-color-icons--image-file.svg)
+	FileVideoIcon.svg (flat-color-icons--video-file.svg)
+	FileAudioIcon.svg (flat-color-icons--audio-file.svg)
+	FileTextIcon.svg (flat-color-icons--document.svg)
+	FileExecutableIcon.svg (flat-color-icons--command-line.svg)
+
+	FileOtherIcon.svg (flat-color-icons--file.svg)
+}
+
+
+Icon pack "with icons Bauhaus" by "Evergrow", downloaded from https://icon-sets.iconify.design/withicons-bauhaus
+{
+	FileArchiveIcon.svg (withicons-bauhaus--file-archive.svg)
 }
 
 

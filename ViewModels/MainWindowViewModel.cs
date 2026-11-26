@@ -58,9 +58,7 @@ namespace RPZ_DiskspaceAnalyzer.ViewModels
         private CancellationTokenSource _сtsDirectoryTreeScanTask = new CancellationTokenSource(); // needs to not allow initial scan + refresh of an element at the same time
                                                                                                    // because refresh would set InitializationFinished to true for all involved
                                                                                                    // directories while they are not fully scanned by initial scan yet
-
-        private CancellationTokenSource _сtsFindDuplicatesTask = new CancellationTokenSource();
-
+        
         public MainWindowViewModel(INotificationManager notificationManager)
         {
             _notificationManager = notificationManager;
@@ -107,16 +105,14 @@ namespace RPZ_DiskspaceAnalyzer.ViewModels
             {
                 if (_topDirectoryData.FinishedInitialization) // FillDirectoryTree() or RefreshElement() finished 
                 {
-                    _сtsFindDuplicatesTask.Cancel();
-                    _сtsFindDuplicatesTask = new CancellationTokenSource();
+                    DuplicateFilesViewModel?.CancellationTokenSource.Cancel();
 
                     BiggestFilesViewModel?.FindBiggestFiles();
-                    Task.Run(() => DuplicateFilesViewModel?.FindDuplicates(_сtsFindDuplicatesTask));
+                    Task.Run(() => DuplicateFilesViewModel?.FindDuplicates());
                 }
                 else // initialization end rolled back by refreshing an element
                 {
-                    _сtsFindDuplicatesTask.Cancel();
-                    _сtsFindDuplicatesTask = new CancellationTokenSource();
+                    DuplicateFilesViewModel?.CancellationTokenSource.Cancel();
                 }
             }
         }

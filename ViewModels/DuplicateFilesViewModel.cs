@@ -32,8 +32,10 @@ namespace RPZ_DiskspaceAnalyzer.ViewModels
         public bool AreThereAnyDuplicateGroups => DuplicateGroups.Count > 0;
 
         [ObservableProperty]
-        private HierarchicalTreeDataGridSource<IFilesystemEntry> _treeDataGridSource;
+        private ExtensionFilterViewModel _extensionFilterViewModel;
 
+        [ObservableProperty]
+        private HierarchicalTreeDataGridSource<IFilesystemEntry> _treeDataGridSource;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsItemSelected))]
@@ -54,6 +56,8 @@ namespace RPZ_DiskspaceAnalyzer.ViewModels
         [NotifyPropertyChangedFor(nameof(ProgressBarText))]
         [NotifyPropertyChangedFor(nameof(IsProgressBarIndeterminate))]
         private string _initializationStageDescription = string.Empty;
+
+        public CancellationTokenSource CancellationTokenSource { get; private set; }
 
         public string ProgressBarText { 
             get 
@@ -114,14 +118,27 @@ namespace RPZ_DiskspaceAnalyzer.ViewModels
             
             TopDirectoryData = topDirectoryData;
 
+            ExtensionFilterViewModel = new ExtensionFilterViewModel((bool regularFilteringPass) =>
+            {
+                Task.Run(() => FindDuplicates(regularFilteringPass ? ExtensionFilterViewModel : null));
+            });
+
             TreeDataGridSource = new HierarchicalTreeDataGridSource<IFilesystemEntry>(TopDirectoryData);
             DuplicateGroups = new ObservableCollection<DuplicateFileGroup>();
 
             _deduplicationCallback = deduplicationCallback;
+
+            CancellationTokenSource = new CancellationTokenSource();
         }
 
-        public void FindDuplicates(CancellationTokenSource сts)
+        public void FindDuplicates(ExtensionFilterViewModel? extensionFilterViewModel = null)
         {
+            CancellationTokenSource.Cancel();
+            CancellationTokenSource = new CancellationTokenSource();
+
+            InitializationFinished = false;
+            DuplicateGroups.Clear();
+
             Dictionary<long, List<FileData>> listsOfFilesWithSameSize = new Dictionary<long, List<FileData>>();
             Dictionary<(long, string), List<FileData>> listsOfFilesWithSameFingerprintAndSize = new Dictionary<(long, string), List<FileData>>();
             Dictionary<(long, string), List<FileData>> listsOfFilesWithSameHashAndSize = new Dictionary<(long, string), List<FileData>>();
@@ -146,7 +163,7 @@ namespace RPZ_DiskspaceAnalyzer.ViewModels
 
                 foreach (FileData fileData in kvPair.Value)
                 {
-                    if (сts.IsCancellationRequested)
+                    if (CancellationTokenSource.IsCancellationRequested)
                     {
                         return;
                     }
@@ -197,7 +214,7 @@ namespace RPZ_DiskspaceAnalyzer.ViewModels
 
                 foreach (FileData fileData in kvPair.Value)
                 {
-                    if (сts.IsCancellationRequested)
+                    if (CancellationTokenSource.IsCancellationRequested)
                     {
                         return;
                     }
@@ -236,7 +253,7 @@ namespace RPZ_DiskspaceAnalyzer.ViewModels
 
             foreach (KeyValuePair<(long, string), List<FileData>> kvPair in listsOfFilesWithSameHashAndSize)
             {
-                if (сts.IsCancellationRequested)
+                if (CancellationTokenSource.IsCancellationRequested)
                 {
                     return;
                 }
@@ -249,18 +266,25 @@ namespace RPZ_DiskspaceAnalyzer.ViewModels
                 DuplicateGroups.Add(new DuplicateFileGroup(TopDirectoryData, kvPair.Value));
             }
             DuplicateGroups = [.. DuplicateGroups.OrderByDescending(group => group.PhysicalSize)];
+            OnPropertyChanged(nameof(AreThereAnyDuplicateGroups));
+
             RefreshTreeDataGrid();
             InitializationFinished = true;
 
             void ProcessDirectoryData(DirectoryData directoryData)
             {
-                if (сts.IsCancellationRequested)
+                if (CancellationTokenSource.IsCancellationRequested)
                 {
                     return;
                 }
 
                 foreach (FileData fileData in directoryData.Files)
                 {
+                    if (extensionFilterViewModel is not null && !extensionFilterViewModel.DoesFilePassFilter(fileData))
+                    {
+                        continue;
+                    }
+
                     long fileSize = fileData.LogicalSize;
                     if (listsOfFilesWithSameSize.Keys.Contains(fileSize))
                     {

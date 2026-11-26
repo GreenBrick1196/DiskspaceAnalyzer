@@ -78,11 +78,17 @@
                         </TreeDataGrid.Styles>
                     </TreeDataGrid>  
                 </ScrollViewer>
+                
+                <Grid RowDefinitions="*, auto" RowSpacing="5" Grid.Column="1">
+                    <ScrollViewer Grid.Row="0">
+                        <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                            <SelectableTextBlock Text="Select an item to see information about it" FontSize="24" IsVisible="{Binding !IsItemSelected}" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center"/>
+                            <UserControl Content="{Binding FilesystemEntryInfoDisplayViewModel}" Margin="0, 0, 0, 20" IsVisible="{Binding IsItemSelected}" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </ScrollViewer>
 
-                <StackPanel Orientation="Vertical" VerticalAlignment="Center" Grid.Column="1">
-                    <SelectableTextBlock Text="Select an item to see information about it" FontSize="24" IsVisible="{Binding !IsItemSelected}" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center"/>
-                    <UserControl Content="{Binding FilesystemEntryInfoDisplayViewModel}" Margin="0, 0, 0, 20" IsVisible="{Binding IsItemSelected}" HorizontalAlignment="Center"/>
-                </StackPanel>
+                    <UserControl Content="{Binding ExtensionFilterViewModel}" Grid.Row="1"/>
+                </Grid>
 
                 <Grid.Effect>
                     <BlurEffect Radius="{Binding BackgroundBlurRadius}"/>
@@ -93,7 +99,7 @@
             <Grid RowDefinitions="*, *, *" ColumnDefinitions="*, 3*, *" IsVisible="{Binding !InitializationFinished}">
                 <StackPanel Orientation="Vertical" Spacing="10" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1">
                     <TextBlock Text="{Binding ProgressBarText}" TextWrapping="Wrap" FontSize="24" HorizontalAlignment="Center" TextAlignment="Center"/>
-                    <ProgressBar Minimum="0" Maximum="{Binding ProgressBarMaximum}" Value="{Binding ProgressBarProgress}" IsIndeterminate="{Binding IsProgressBarIndeterminate}" Height="20"/>
+                    <ProgressBar Minimum="0" Maximum="{Binding ProgressBarMaximum}" Value="{Binding ProgressBarProgress}" IsIndeterminate="{Binding IsProgressBarIndeterminate}" Height="20" x:Name="waitingProgressbar" AttachedToVisualTree="WaitingProgressbar_AttachedToVisualTree"/>
                 </StackPanel>
             </Grid>
 
@@ -159,7 +165,6 @@
                 </Border>
              </Grid>
         </Panel>
-
 
     </Border>
 </UserControl>

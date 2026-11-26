@@ -82,4 +82,13 @@ public partial class DuplicateFilesView : UserControl
 
         header.ContextMenu = menu;
     }
+
+    private void WaitingProgressbar_AttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        if (waitingProgressbar.IsIndeterminate)
+        {
+            waitingProgressbar.IsIndeterminate = false;
+            waitingProgressbar.IsIndeterminate = true;
+        }
+    }
 }

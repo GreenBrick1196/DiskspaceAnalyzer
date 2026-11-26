@@ -1,0 +1,93 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:RPZ_DiskspaceAnalyzer.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="RPZ_DiskspaceAnalyzer.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="RPZ_DiskspaceAnalyzer">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <Border>
+        <DockPanel>
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="File">
+                    <MenuItem Header="New scan" Command="{Binding PromptNewScanCommand}"/>
+                    <Separator/>
+                    <MenuItem Header="Export to JSON" Command="{Binding ExportToJsonCommand}" CommandParameter="{Binding $parent[Window]}"/>
+                    <MenuItem Header="Import from JSON" Command="{Binding ImportFromJsonCommand}" CommandParameter="{Binding $parent[Window]}"/>    
+                    <Separator/>
+                    <MenuItem Header="Exit" Command="{Binding ExitCommand}"/>    
+                </MenuItem>
+                <MenuItem Header="View">
+                    <MenuItem Header="Switch to Directory Tree" Command="{Binding SwitchToDirectoryTreeCommand}"/>
+                    <MenuItem Header="Switch to Biggest Files" Command="{Binding SwitchToBiggestFilesCommand}"/>
+                    <MenuItem Header="Switch to Duplicate Files" Command="{Binding SwitchToDuplicateFilesCommand}"/>
+                </MenuItem>
+                <MenuItem Header="Theme">
+                    <MenuItem Header="Switch to light" Command="{Binding SwitchThemeCommand}" CommandParameter="Light"/>
+                    <MenuItem Header="Switch to dark" Command="{Binding SwitchThemeCommand}" CommandParameter="Dark"/>    
+                </MenuItem>
+                <MenuItem Header="About" Command="{Binding OpenAboutPopupCommand}"/>
+            </Menu>
+            <Separator Margin="-10" DockPanel.Dock="Top"/>
+
+            <Panel>
+                <TabControl TabStripPlacement="Bottom" SelectedIndex="{Binding SelectedTabIndex}">
+                    <TabItem Header="Directory Tree">
+                        <UserControl Content="{Binding DirectoryTreeViewModel}"/>
+                    </TabItem>
+                    <TabItem Header="Biggest Files">
+                        <UserControl Content="{Binding BiggestFilesViewModel}"/>
+                    </TabItem>
+                    <TabItem Header="Duplicate Files">
+                        <UserControl Content="{Binding DuplicateFilesViewModel}"/>
+                    </TabItem>
+
+                    <TabControl.Effect>
+                        <BlurEffect Radius="{Binding BackgroundBlurRadius}"/>
+                    </TabControl.Effect>
+                </TabControl>
+
+                <Grid Background="Transparent" RowDefinitions="*, *, *" ColumnDefinitions="*, 2*, *" IsVisible="{Binding IsSelectDirectoryPopupOpen}">
+                    <StackPanel Orientation="Vertical" Spacing="10" Grid.Row="1" Grid.Column="1">
+                        <TextBlock Text="Select a directory" FontSize="24" HorizontalAlignment="Center"/>
+                        <Grid ColumnDefinitions="*, auto" ColumnSpacing="5">
+                            <TextBox Text="{Binding DirectoryPathInput}" Grid.Column="0"/>
+                            <Button Command="{Binding OpenFolderPickerCommand}" CommandParameter="{Binding $parent[Window]}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1">
+                                <TextBlock Text="Browse" HorizontalAlignment="Center"/>
+                            </Button>
+                        </Grid>
+                        <Button Command="{Binding StartScanCommand}" HorizontalAlignment="Stretch">
+                            <TextBlock Text="Scan" FontSize="24" HorizontalAlignment="Center"/>
+                        </Button>
+                    </StackPanel>
+
+                    <Grid.Effect>
+                        <BlurEffect Radius="{Binding ScanPopupBlurRadius}"/>
+                    </Grid.Effect>
+                </Grid>
+
+                <Grid Background="Transparent" RowDefinitions="*, 3*, *" ColumnDefinitions="*, *, *" IsVisible="{Binding IsAboutPopupOpen}">
+                    <Border Background="{DynamicResource BackgroundColor}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="3" Padding="20" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1">
+                        <StackPanel Orientation="Vertical" Spacing="10" VerticalAlignment="Center">
+                            <SelectableTextBlock Text="A simple crossplatform app that analyzes diskspace usage. Written in C# using AvaloniaUI with MVVM." FontSize="24" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center"/>
+                            <SelectableTextBlock Text="https://github.com/GreenBrick1196/DiskspaceAnalyzer" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center"/>
+                            <Button Command="{Binding CloseAboutPopupCommand}" HorizontalAlignment="Stretch">
+                                <TextBlock Text="Close" FontSize="24" HorizontalAlignment="Center"/>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Panel>
+        </DockPanel>
+    </Border>
+
+</Window>

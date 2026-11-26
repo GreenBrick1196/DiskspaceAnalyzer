@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Tmds.DBus.Protocol;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace RPZ_DiskspaceAnalyzer.Models
 {
@@ -120,6 +121,17 @@ namespace RPZ_DiskspaceAnalyzer.Models
             $"\nTakes {PhysicalSizeDirectoryPercentageText} of directory physical space, {PhysicalSizeTotalPercentageText} total" +
             $"\nCreated {CreatedTimeText}" +
             $"\nEdited {EditedTimeText}";
+
+        public static readonly Dictionary<string, string[]> FileTypesToExtensions = new Dictionary<string, string[]>()
+        {
+            ["Image"] = [".jpg", ".jpeg", ".jfif", ".png", ".gif", ".webp", ".avif", ".tiff", ".tif", ".bmp", ".heif", ".heic"],
+            ["Video"] = [".mp4", ".mkv", ".webm", ".mov", ".avi", ".wmv"],
+            ["Audio"] = [".mp3", ".aac", ".m4a", ".ogg", ".opus", ".wav", ".flac", ".alac", ".ape"],
+            ["Text"] = [".txt", ".md", ".markdown", ".csv", ".json", ".xml", ".log", ".doc", ".docx", ".odt", ".rtf", ".pdf", ".html"],
+            ["Executable"] = [".exe", ".msi", ".bat", ".cmd", ".ps1", ".vbs", ".vbe", ".wsf", ".scr", ".com", ".app", ".command", ".action", ".workflow", ".sh", ".bash", ".csh", ".ksh"],
+            ["Archive"] = [".zip", ".rar", ".7z", ".tar", ".gz", ".tgz", ".bz2", ".xz"]
+        };
+        public static readonly string[] FileTypes = FileTypesToExtensions.Keys.ToArray();
 
         public FileData(DirectoryData topDirectory, DirectoryData directory, string filePath)
         {

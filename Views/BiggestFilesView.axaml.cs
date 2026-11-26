@@ -1,9 +1,11 @@
 ﻿using Avalonia;
+using Avalonia.Animation;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Styling;
 using Avalonia.VisualTree;
 using LiveChartsCore.SkiaSharpView.Avalonia;
 using RPZ_DiskspaceAnalyzer.Models;
@@ -59,5 +61,14 @@ public partial class BiggestFilesView : UserControl
         });
 
         header.ContextMenu = menu;
+    }
+
+    private void WaitingProgressbar_AttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        if (waitingProgressbar.IsIndeterminate)
+        {
+            waitingProgressbar.IsIndeterminate = false;
+            waitingProgressbar.IsIndeterminate = true;
+        }
     }
 }
